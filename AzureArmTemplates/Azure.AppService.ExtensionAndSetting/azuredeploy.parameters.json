@@ -1,0 +1,21 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "sites_App1_name": {
+      "value": "Dev-App1"
+    },
+    "sites_App2_name": {
+      "value": "Dev-App2"
+    },
+    "serverfarms_Development_externalid": {
+      "value": "/subscriptions/xxxx-xxxx-xxxx/resourceGroups/xxxx/providers/Microsoft.Web/serverfarms/xxxx"
+    },
+    "extensionName": {
+      "value": "AspNetCoreRuntime.3.1.x86"
+    },
+    "extensionVersion": {
+      "value": "3.1.1"
+    }
+  }
+}

@@ -1,0 +1,355 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "sites_App1_name": {
+      "defaultValue": "Dev-",
+      "type": "String"
+    },
+    "sites_App2_name": {
+      "defaultValue": "Dev-",
+      "type": "String"
+    },
+    "serverfarms_Development_externalid": {
+      "defaultValue": "",
+      "type": "String"
+    },
+    "aspnet_environment": {
+      "defaultValue": "AzureDevelopment",
+      "type": "String"
+    },
+    "extensionName": {
+      "type": "string",
+      "metadata": {
+        "description": "The Site Extension Name."
+      }
+    },
+    "extensionVersion": {
+      "type": "string",
+      "metadata": {
+        "description": "The Extension Version"
+      }
+    }
+  },
+  "variables": {
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2018-11-01",
+      "name": "[parameters('sites_App1_name')]",
+      "location": "North Europe",
+      "kind": "app",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "dependsOn": [
+        "[resourceId('microsoft.insights/components/', parameters('sites_App1_name'))]"
+      ],
+      "properties": {
+        "enabled": true,
+        "serverFarmId": "[parameters('serverfarms_Development_externalid')]",
+        "reserved": false,
+        "isXenon": false,
+        "hyperV": false,
+        "scmSiteAlsoStopped": false,
+        "clientAffinityEnabled": true,
+        "clientCertEnabled": false,
+        "hostNamesDisabled": false,
+        "containerSize": 0,
+        "dailyMemoryTimeQuota": 0,
+        "httpsOnly": true,
+        "redundancyMode": "None"
+      },
+      "resources": [
+        {
+          "name": "appsettings",
+          "type": "config",
+          "apiVersion": "2015-08-01",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites', parameters('sites_App1_name'))]"
+          ],
+          "tags": {
+            "displayName": "Application Settings"
+          },
+          "properties": {
+            "ASPNETCORE_ENVIRONMENT": "[parameters('aspnet_environment')]",
+            "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(concat('microsoft.insights/components/', parameters('sites_App1_name')), '2015-05-01').InstrumentationKey]",
+            "APPLICATIONINSIGHTS_CONNECTION_STRING": "[reference(concat('microsoft.insights/components/', parameters('sites_App1_name')), '2015-05-01').ConnectionString]"
+          }
+        },
+        {
+          "apiVersion": "2015-08-01",
+          "name": "[concat(parameters('sites_App1_name'), '/', parameters('extensionName'))]",
+          "type": "Microsoft.Web/sites/siteextensions",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/Sites', parameters('sites_App1_name'))]",
+            "[resourceId('Microsoft.Web/Sites/config', parameters('sites_App1_name'), 'web')]"
+          ],
+          "properties": {
+            "version": "[parameters('extensionVersion')]"
+          }
+        }
+      ]
+    },
+    {
+      "type": "Microsoft.Web/sites/config",
+      "apiVersion": "2018-11-01",
+      "name": "[concat(parameters('sites_App1_name'), '/web')]",
+      "location": "North Europe",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('sites_App1_name'))]"
+      ],
+      "properties": {
+        "numberOfWorkers": 1,
+        "defaultDocuments": [
+          "Default.htm",
+          "Default.html",
+          "Default.asp",
+          "index.htm",
+          "index.html",
+          "iisstart.htm",
+          "default.aspx",
+          "index.php",
+          "hostingstart.html"
+        ],
+        "netFrameworkVersion": "v4.0",
+        "phpVersion": "5.6",
+        "nodeVersion": "12.13.0",
+        "requestTracingEnabled": false,
+        "remoteDebuggingEnabled": false,
+        "remoteDebuggingVersion": "VS2019",
+        "httpLoggingEnabled": false,
+        "logsDirectorySizeLimit": 35,
+        "detailedErrorLoggingEnabled": false,
+        "scmType": "None",
+        "use32BitWorkerProcess": true,
+        "webSocketsEnabled": false,
+        "alwaysOn": true,
+        "managedPipelineMode": "Integrated",
+        "virtualApplications": [
+          {
+            "virtualPath": "/",
+            "physicalPath": "site\\wwwroot",
+            "preloadEnabled": true
+          }
+        ],
+        "loadBalancing": "LeastRequests",
+        "experiments": {
+          "rampUpRules": [
+          ]
+        },
+        "autoHealEnabled": false,
+        "localMySqlEnabled": false,
+        "ipSecurityRestrictions": [
+          {
+            "ipAddress": "Any",
+            "action": "Allow",
+            "priority": 1,
+            "name": "Allow all",
+            "description": "Allow all access"
+          }
+        ],
+        "scmIpSecurityRestrictions": [
+          {
+            "ipAddress": "Any",
+            "action": "Allow",
+            "priority": 1,
+            "name": "Allow all",
+            "description": "Allow all access"
+          }
+        ],
+        "scmIpSecurityRestrictionsUseMain": false,
+        "http20Enabled": false,
+        "minTlsVersion": "1.2",
+        "ftpsState": "AllAllowed",
+        "reservedInstanceCount": 0
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites/hostNameBindings",
+      "apiVersion": "2018-11-01",
+      "name": "[concat(parameters('sites_App1_name'), '/', parameters('sites_App1_name'), '.azurewebsites.net')]",
+      "location": "North Europe",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('sites_App1_name'))]"
+      ],
+      "properties": {
+        "siteName": "[parameters('sites_App1_name')]",
+        "hostNameType": "Verified"
+      }
+    },
+    {
+      "apiVersion": "2015-05-01",
+      "name": "[parameters('sites_App1_name')]",
+      "type": "microsoft.insights/components",
+      "location": "northeurope",
+      "kind": "",
+      "tags": {
+      },
+      "properties": {
+        "Application_Type": "web",
+        "ApplicationId": "[parameters('sites_App1_name')]"
+      }
+    },
+
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2018-11-01",
+      "name": "[parameters('sites_App2_name')]",
+      "location": "North Europe",
+      "kind": "app",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "dependsOn": [
+        "[resourceId('microsoft.insights/components/', parameters('sites_App2_name'))]"
+      ],
+      "properties": {
+        "enabled": true,
+        "serverFarmId": "[parameters('serverfarms_Development_externalid')]",
+        "reserved": false,
+        "isXenon": false,
+        "hyperV": false,
+        "scmSiteAlsoStopped": false,
+        "clientAffinityEnabled": true,
+        "clientCertEnabled": false,
+        "hostNamesDisabled": false,
+        "containerSize": 0,
+        "dailyMemoryTimeQuota": 0,
+        "httpsOnly": true,
+        "redundancyMode": "None"
+      },
+      "resources": [
+        {
+          "name": "appsettings",
+          "type": "config",
+          "apiVersion": "2015-08-01",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites', parameters('sites_App2_name'))]"
+          ],
+          "tags": {
+            "displayName": "Application Settings"
+          },
+          "properties": {
+            "ASPNETCORE_ENVIRONMENT": "[parameters('aspnet_environment')]",
+            "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(concat('microsoft.insights/components/', parameters('sites_App2_name')), '2015-05-01').InstrumentationKey]",
+            "APPLICATIONINSIGHTS_CONNECTION_STRING": "[reference(concat('microsoft.insights/components/', parameters('sites_App2_name')), '2015-05-01').ConnectionString]"
+          }
+        },
+        {
+          "apiVersion": "2015-08-01",
+          "name": "[concat(parameters('sites_App2_name'), '/', parameters('extensionName'))]",
+          "type": "Microsoft.Web/sites/siteextensions",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/Sites', parameters('sites_App2_name'))]",
+            "[resourceId('Microsoft.Web/Sites/config', parameters('sites_App2_name'), 'web')]"
+          ],
+          "properties": {
+            "version": "[parameters('extensionVersion')]"
+          }
+        }
+      ]
+    },
+    {
+      "type": "Microsoft.Web/sites/config",
+      "apiVersion": "2018-11-01",
+      "name": "[concat(parameters('sites_App2_name'), '/web')]",
+      "location": "North Europe",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('sites_App2_name'))]"
+      ],
+      "properties": {
+        "numberOfWorkers": 1,
+        "defaultDocuments": [
+          "Default.htm",
+          "Default.html",
+          "Default.asp",
+          "index.htm",
+          "index.html",
+          "iisstart.htm",
+          "default.aspx",
+          "index.php",
+          "hostingstart.html"
+        ],
+        "netFrameworkVersion": "v4.0",
+        "phpVersion": "5.6",
+        "nodeVersion": "12.13.0",
+        "requestTracingEnabled": false,
+        "remoteDebuggingEnabled": false,
+        "remoteDebuggingVersion": "VS2019",
+        "httpLoggingEnabled": false,
+        "logsDirectorySizeLimit": 35,
+        "detailedErrorLoggingEnabled": false,
+        "scmType": "None",
+        "use32BitWorkerProcess": true,
+        "webSocketsEnabled": false,
+        "alwaysOn": true,
+        "managedPipelineMode": "Integrated",
+        "virtualApplications": [
+          {
+            "virtualPath": "/",
+            "physicalPath": "site\\wwwroot",
+            "preloadEnabled": true
+          }
+        ],
+        "loadBalancing": "LeastRequests",
+        "experiments": {
+          "rampUpRules": [
+          ]
+        },
+        "autoHealEnabled": false,
+        "localMySqlEnabled": false,
+        "ipSecurityRestrictions": [
+          {
+            "ipAddress": "Any",
+            "action": "Allow",
+            "priority": 1,
+            "name": "Allow all",
+            "description": "Allow all access"
+          }
+        ],
+        "scmIpSecurityRestrictions": [
+          {
+            "ipAddress": "Any",
+            "action": "Allow",
+            "priority": 1,
+            "name": "Allow all",
+            "description": "Allow all access"
+          }
+        ],
+        "scmIpSecurityRestrictionsUseMain": false,
+        "http20Enabled": false,
+        "minTlsVersion": "1.2",
+        "ftpsState": "AllAllowed",
+        "reservedInstanceCount": 0
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites/hostNameBindings",
+      "apiVersion": "2018-11-01",
+      "name": "[concat(parameters('sites_App2_name'), '/', parameters('sites_App2_name'), '.azurewebsites.net')]",
+      "location": "North Europe",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('sites_App2_name'))]"
+      ],
+      "properties": {
+        "siteName": "[parameters('sites_App2_name')]",
+        "hostNameType": "Verified"
+      }
+    },
+    {
+      "apiVersion": "2015-05-01",
+      "name": "[parameters('sites_App2_name')]",
+      "type": "microsoft.insights/components",
+      "location": "northeurope",
+      "kind": "",
+      "tags": {
+      },
+      "properties": {
+        "Application_Type": "web",
+        "ApplicationId": "[parameters('sites_App2_name')]"
+      }
+    }
+  ]
+}
