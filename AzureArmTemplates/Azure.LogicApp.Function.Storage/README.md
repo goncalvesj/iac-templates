@@ -11,7 +11,7 @@ This templates creates the following:
 2. Function App is executed
 3. Message is completed or sent to deadletter
 
-![LogicAppFlow](LogicAppFlow.png)
+![LogicAppFlow](LogicAppFlow.PNG)
 
 ## Azure Resources
 
