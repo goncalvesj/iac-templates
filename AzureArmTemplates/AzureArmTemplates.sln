@@ -7,7 +7,7 @@ Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "Azure.B2C.Storage", "Azure.
 EndProject
 Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "Azure.AppService.ExtensionAndSetting", "Azure.AppService.ExtensionAndSetting\Azure.AppService.ExtensionAndSetting.deployproj", "{6E04796C-7840-40F7-98A6-D79A2993E051}"
 EndProject
-Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "Azure.LogicApp", "Azure.LogicApp\Azure.LogicApp.deployproj", "{00EA2066-B561-49EA-B52F-7A497F0B9868}"
+Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "Azure.LogicApp.Function.Storage", "Azure.LogicApp.Function.Storage\Azure.LogicApp.Function.Storage.deployproj", "{00EA2066-B561-49EA-B52F-7A497F0B9868}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -10,3 +10,7 @@ This templates creates the following:
 - ASPNET_CORE_ENVIRONMENT application settings
 - APPINSIGHTS_INSTRUMENTATIONKEY application settings
 - Adds .Net Core runtime version 3.1
+
+## Azure Resources
+
+![AzureResources](AzureResources.png)
