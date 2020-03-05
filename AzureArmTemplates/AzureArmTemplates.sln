@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "Azure.B2C.Storage", "Azure.B2C.Storage\Azure.B2C.Storage.deployproj", "{AA40A484-C810-47EA-9980-67CA6453D94A}"
 EndProject
+Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "Azure.AppService.ExtensionAndSetting", "Azure.AppService.ExtensionAndSetting\Azure.AppService.ExtensionAndSetting.deployproj", "{6E04796C-7840-40F7-98A6-D79A2993E051}"
+EndProject
+Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "Azure.LogicApp", "Azure.LogicApp\Azure.LogicApp.deployproj", "{00EA2066-B561-49EA-B52F-7A497F0B9868}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{AA40A484-C810-47EA-9980-67CA6453D94A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA40A484-C810-47EA-9980-67CA6453D94A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA40A484-C810-47EA-9980-67CA6453D94A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E04796C-7840-40F7-98A6-D79A2993E051}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E04796C-7840-40F7-98A6-D79A2993E051}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E04796C-7840-40F7-98A6-D79A2993E051}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E04796C-7840-40F7-98A6-D79A2993E051}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00EA2066-B561-49EA-B52F-7A497F0B9868}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00EA2066-B561-49EA-B52F-7A497F0B9868}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00EA2066-B561-49EA-B52F-7A497F0B9868}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00EA2066-B561-49EA-B52F-7A497F0B9868}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

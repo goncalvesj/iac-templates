@@ -1,0 +1,372 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "servicebus_1_Connection_Name": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "servicebus_1_Connection_DisplayName": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "servicebus_1_connectionString": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Azure Service Bus Connection String"
+      }
+    },
+    "LogicAppLocation": {
+      "type": "string",
+      "minLength": 1,
+      "allowedValues": [
+        "[resourceGroup().location]",
+        "eastasia",
+        "southeastasia",
+        "centralus",
+        "eastus",
+        "eastus2",
+        "westus",
+        "northcentralus",
+        "southcentralus",
+        "northeurope",
+        "westeurope",
+        "japanwest",
+        "japaneast",
+        "brazilsouth",
+        "australiaeast",
+        "australiasoutheast",
+        "southindia",
+        "centralindia",
+        "westindia",
+        "canadacentral",
+        "canadaeast",
+        "uksouth",
+        "ukwest",
+        "westcentralus",
+        "westus2",
+        "koreacentral",
+        "koreasouth",
+        "francecentral",
+        "francesouth",
+        "southafricanorth",
+        "southafricawest"
+      ],
+      "defaultValue": "northeurope"
+    },
+    "LogicAppName": {
+      "type": "string",
+      "minLength": 1,
+      "defaultValue": ""
+    },
+    "functionStorageAccountName": {
+      "type": "string",
+      "minLength": 1,
+      "defaultValue": ""
+    },
+    "storageAccountName": {
+      "type": "string",
+      "minLength": 1,
+      "defaultValue": ""
+    },
+    "fileShareName": {
+      "type": "string",
+      "minLength": 1,
+      "defaultValue": ""
+    },
+    "functionAppName": {
+      "type": "string",
+      "minLength": 1,
+      "defaultValue": ""
+    }
+  },
+  "variables": {
+    "functionId1": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Web/sites/', parameters('functionAppName'), '/functions/Function1')]",
+    "functionId2": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Web/sites/', parameters('functionAppName'), '/functions/Function2')]",
+    "storageAccountid": "[resourceId('Microsoft.Storage/storageAccounts', parameters('functionStorageAccountName'))]",
+    "sbusSubscriptionId": "[concat('/@{encodeURIComponent(encodeURIComponent(''', 'SBUSTOPIC', '''))}/subscriptions/@{encodeURIComponent(''', 'SBUSSUBSCRIPTION', ''')}')]"
+  },
+  "resources": [
+    {
+      "properties": {
+        "state": "Enabled",
+        "definition": {
+          "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+          "actions": {
+            "Complete_the_message_in_a_topic_subscription": {
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['servicebus']['connectionId']"
+                  }
+                },
+                "method": "delete",
+                "path": "[concat(variables('sbusSubscriptionId'), '/messages/complete')]",
+                "queries": {
+                  "lockToken": "@triggerBody()?['LockToken']",
+                  "subscriptionType": "Main",
+                  "sessionId": ""
+                }
+              },
+              "runAfter": {
+                "Scope": [
+                  "Succeeded"
+                ]
+              }
+            },
+            "Dead-letter_the_message_in_a_topic_subscription": {
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['servicebus']['connectionId']"
+                  }
+                },
+                "method": "post",
+                "path": "[concat(variables('sbusSubscriptionId'), '/messages/deadletter')]",
+                "queries": {
+                  "lockToken": "@triggerBody()?['LockToken']",
+                  "deadLetterReason": "",
+                  "deadLetterErrorDescription": "",
+                  "sessionId": ""
+                }
+              },
+              "runAfter": {
+                "Scope": [
+                  "Failed"
+                ]
+              }
+            },
+            "Scope": {
+              "type": "Scope",
+              "actions": {               
+                "CallFunction2": {
+                  "type": "Function",
+                  "inputs": {
+                    "body": "@body('CallFunction1')",
+                    "method": "POST",
+                    "function": {
+                      "id": "[variables('functionId2')]"
+                    }
+                  },
+                  "runAfter": {
+                    "CallFunction1": [
+                      "Succeeded"
+                    ]
+                  }
+                },              
+                "CallFunction1": {
+                  "type": "Function",
+                  "inputs": {
+                    "body": "@base64ToString(triggerBody()?['ContentData'])",
+                    "method": "POST",
+                    "function": {
+                      "id": "[variables('functionId1')]"
+                    }
+                  },
+                  "runAfter": {}
+                }
+              },
+              "runAfter": {}
+            }
+          },
+          "parameters": {
+            "$connections": {
+              "defaultValue": {},
+              "type": "Object"
+            }
+          },
+          "triggers": {
+            "When_a_message_is_received_in_a_topic_subscription_(peek-lock)": {
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['servicebus']['connectionId']"
+                  }
+                },
+                "method": "get",
+                "path": "[concat(variables('sbusSubscriptionId'), '/messages/head/peek')]",
+                "queries": {
+                  "subscriptionType": "Main",
+                  "sessionId": "None"
+                }
+              },
+              "recurrence": {
+                "frequency": "Minute",
+                "interval": 1
+              }
+            }
+          },
+          "contentVersion": "1.0.0.0",
+          "outputs": {}
+        },
+        "parameters": {
+          "$connections": {
+            "value": {
+              "servicebus": {
+                "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', parameters('LogicAppLocation'), '/managedApis/', 'servicebus')]",
+                "connectionId": "[resourceId('Microsoft.Web/connections', parameters('servicebus_1_Connection_Name'))]",
+                "connectionName": "[parameters('servicebus_1_Connection_Name')]"
+              }
+            }
+          }
+        }
+      },
+      "name": "[parameters('LogicAppName')]",
+      "type": "Microsoft.Logic/workflows",
+      "location": "[parameters('LogicAppLocation')]",
+      "tags": {
+        "displayName": "LogicApp"
+      },
+      "apiVersion": "2016-06-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/connections', parameters('servicebus_1_Connection_Name'))]",
+        "[resourceId('Microsoft.Web/sites', parameters('functionAppName'))]"
+      ]
+    },
+    {
+      "type": "MICROSOFT.WEB/CONNECTIONS",
+      "apiVersion": "2018-07-01-preview",
+      "name": "[parameters('servicebus_1_Connection_Name')]",
+      "location": "northeurope",
+      "properties": {
+        "api": {
+          "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', 'northeurope', '/managedApis/', 'servicebus')]"
+        },
+        "displayName": "[parameters('servicebus_1_Connection_DisplayName')]",
+        "parameterValues": {
+          "connectionString": "[parameters('servicebus_1_connectionString')]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2019-04-01",
+      "name": "[parameters('storageAccountName')]",
+      "location": "northeurope",
+      "tags": {
+      },
+      "sku": {
+        "name": "Standard_LRS",
+        "tier": "Standard"
+      },
+      "kind": "StorageV2",
+      "properties": {
+        "networkAcls": {
+          "bypass": "AzureServices",
+          "virtualNetworkRules": [],
+          "ipRules": [],
+          "defaultAction": "Allow"
+        },
+        "supportsHttpsTrafficOnly": true,
+        "encryption": {
+          "services": {
+            "file": {
+              "enabled": true
+            },
+            "blob": {
+              "enabled": true
+            }
+          },
+          "keySource": "Microsoft.Storage"
+        },
+        "accessTier": "Hot"
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
+      "apiVersion": "2019-04-01",
+      "name": "parameters('fileShareName')",
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2019-04-01",
+      "name": "[parameters('functionStorageAccountName')]",
+      "location": "northeurope",
+      "sku": {
+        "name": "Standard_LRS",
+        "tier": "Standard"
+      },
+      "kind": "Storage",
+      "properties": {
+        "networkAcls": {
+          "bypass": "AzureServices",
+          "virtualNetworkRules": [],
+          "ipRules": [],
+          "defaultAction": "Allow"
+        },
+        "supportsHttpsTrafficOnly": false,
+        "encryption": {
+          "services": {
+            "file": {
+              "enabled": true
+            },
+            "blob": {
+              "enabled": true
+            }
+          },
+          "keySource": "Microsoft.Storage"
+        }
+      }
+    },
+    {
+      "apiVersion": "2014-04-01",
+      "name": "[parameters('functionAppName')]",
+      "type": "Microsoft.Insights/components",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "applicationId": "[parameters('functionAppName')]"
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2016-08-01",
+      "name": "[parameters('functionAppName')]",
+      "location": "[resourceGroup().location]",
+      "kind": "functionapp",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('functionStorageAccountName'))]"
+      ],
+      "properties": {
+        "httpsOnly": true,
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "AzureWebJobsStorage",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('functionStorageAccountName'), ';AccountKey=', listKeys(variables('storageAccountid'),'2015-05-01-preview').key1)]"
+            },
+            {
+              "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('functionStorageAccountName'), ';AccountKey=', listKeys(variables('storageAccountid'),'2015-05-01-preview').key1)]"
+            },
+            {
+              "name": "WEBSITE_CONTENTSHARE",
+              "value": "[toLower(parameters('functionAppName'))]"
+            },
+            {
+              "name": "FUNCTIONS_WORKER_RUNTIME",
+              "value": "dotnet"
+            },
+            {
+              "name": "FUNCTIONS_EXTENSION_VERSION",
+              "value": "~2"
+            },
+            {
+              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+              "value": "[reference(concat('microsoft.insights/components/', parameters('functionAppName'))).InstrumentationKey]"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "outputs": {}
+}
