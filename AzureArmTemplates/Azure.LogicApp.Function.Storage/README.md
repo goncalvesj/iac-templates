@@ -7,9 +7,10 @@ This templates creates the following:
 - Function App with associated Storage Account and App Insights
 
 ## Logic App Flow
+
 1. Message is received
 2. Function App is executed
-3. Message is completed or sent to deadletter
+3. Message is completed or sent to dead letter
 
 ![LogicAppFlow](LogicAppFlow.PNG)
 
