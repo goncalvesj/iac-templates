@@ -21,3 +21,17 @@ ARM Template that creates an Azure Storage Account, Function and Logic App:
 Terraform Template that creates an Azure App Service for a Docker image pulled from Docker Hub
 
 - [Azure App Service Docker](TerraformTemplates/Azure.AppService.Docker)
+
+Terraform Template that creates an Azure AKS service with Managed Identity
+
+- [Azure Kubernetes Service](TerraformTemplates/Azure.AppService.Docker)
+
+## K8S Templates
+
+Manifest file that creates a Kubernetes cluster issuer for Let's Encrypt certificates.
+
+- [Let's Encrypt Cert Issuer](K8S/certissuers.yaml)
+
+Manifest file that creates a Kubernetes NGINX ingress controller with a custom domain.
+
+- [NGINX Ingress](K8S/ingress.yaml)

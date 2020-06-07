@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: goncalvesj-aks-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    cert-manager.io/cluster-issuer: letsencrypt
+spec:
+  tls:
+    - hosts:
+        - event-sourcing.jpcloud.tk
+      secretName: tls-secret
+  rules:
+    - host: event-sourcing.jpcloud.tk
+      http:
+        paths:
+          - backend:
+              serviceName: event-sourcing
+              servicePort: 80
+            path: /(.*)
