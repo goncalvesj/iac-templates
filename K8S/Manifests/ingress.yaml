@@ -11,31 +11,15 @@ spec:
   tls:
     - hosts:
         - m3u-split.jpcloud.tk
-    # - hosts:
-    #     - event-sourcing.jpcloud.tk
-    #   secretName: tls-secret
-    # - hosts:
-    #     - audiosplitterapi.jpcloud.tk
-    #   secretName: tls-secret-audiosplitterapi
+      secretName: m3u-split-cert
   rules:
     - host: m3u-split.jpcloud.tk
       http:
         paths:
-          - backend:
-              serviceName: m3u-split
-              servicePort: 80
-            path: /(.*)
-    # - host: event-sourcing.jpcloud.tk
-    #   http:
-    #     paths:
-    #       - backend:
-    #           serviceName: event-sourcing
-    #           servicePort: 80
-    #         path: /(.*)
-    # - host: audiosplitterapi.jpcloud.tk
-    #   http:
-    #     paths:
-    #       - backend:
-    #           serviceName: lyricsextractor-splitapi
-    #           servicePort: 80
-    #         path: /(.*)
+          - path: /(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: m3u-split
+                port:
+                  number: 80
