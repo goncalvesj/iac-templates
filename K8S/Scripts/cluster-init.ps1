@@ -12,10 +12,10 @@ kubectl create namespace cert-manager
 helm repo add jetstack https://charts.jetstack.io
 helm repo update
 
-helm install cert-manager jetstack/cert-manager `
-  --namespace cert-manager `
-  --version v1.3.0 `
-  --set installCRDs=true
+helm install cert-manager jetstack/cert-manager --namespace cert-manager --version v1.6.1 --set installCRDs=true
+
+#Cert-manager Install - Kubectl Alternative
+#kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.6.1/cert-manager.yaml
 
 # kubectl apply `
 #     --namespace m3u-split `
