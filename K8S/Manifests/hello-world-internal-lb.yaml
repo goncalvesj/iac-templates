@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aks-helloworld-internal
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aks-helloworld-internal
+  template:
+    metadata:
+      labels:
+        app: aks-helloworld-internal
+    spec:
+      containers:
+      - name: aks-helloworld-internal
+        image: mcr.microsoft.com/azuredocs/aks-helloworld:v1
+        ports:
+        - containerPort: 80
+        env:
+        - name: TITLE
+          value: "Welcome to Azure Kubernetes Service (AKS)"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aks-helloworld-internal
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+  selector:
+    app: aks-helloworld-internal
