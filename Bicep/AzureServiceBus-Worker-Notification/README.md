@@ -28,8 +28,21 @@ Bicep modules that are used to define the Azure services.
 
 [deploy.ps1](deploy.ps1) - PowerShell script to execute the deployment of the Bicep files. Also added KEDA to the AKS cluster.
 
+## AKS
+
+The AKS cluster is created with the following configuration:
+
+- 2 node pools (1 system pool and 1 user pool to run k8s jobs and queue processors)
+  - User node pool scales down to 0 nodes when not in use
+- Key Vault integration
+- Virtual node integration with Azure Container Instances (to test the virtual node feature)
+
 ## Deployment
 
 Use the VS Code Bicep extension to deploy the Bicep files. Right click on the [main.bicep](main.bicep) file and select "Deploy Bicep File". Save the deployment parameters in a file for future use.
 
-Execute the [deploy.ps1](deploy.ps1) PowerShell script to deploy the Bicep files. Needs a deployment parameters file as input.
+Execute the [deploy-bicep.ps1](deploy-bicep.ps1) PowerShell script to deploy the Bicep files. Needs a deployment parameters file as input.
+
+Execute the [deploy-keda.ps1](deploy-keda.ps1) PowerShell script to deploy KEDA in the AKS Cluster. Creates a K8S secret for the KEDA Auth Trigger.
+
+Execute the [deploy-aci.ps1](deploy-aci.ps1) PowerShell script to deploy Virtual Nodes in the AKS Cluster. Used to test using Azure Container Instances as a node pool to run the queue processor.

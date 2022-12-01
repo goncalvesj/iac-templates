@@ -2,7 +2,7 @@ param location string = resourceGroup().location
 
 // Spoke VNET Settings
 param aksSubnetId string = ''
-param aciSubnetName string = ''
+// param aciSubnetName string = ''
 
 // AKS Settings
 param clusterName string = ''
@@ -78,12 +78,15 @@ resource aks 'Microsoft.ContainerService/managedClusters@2022-07-02-preview' = {
           logAnalyticsWorkspaceResourceID: laWorkspaceId
         }
       }
-      aciConnectorLinux: {
-        enabled: true
-        config: {
-          SubnetName: aciSubnetName
-        }
-      }     
+      // TODO: Issue going on when enabling the Add-on like this or using the CLI
+      //       Virtual Node does not get created and Pod throws Identity not found error
+      //       Alternative is to deploy manually using Helm
+      // aciConnectorLinux: {
+      //   enabled: true
+      //   config: {
+      //     SubnetName: aciSubnetName
+      //   }
+      // }     
       azureKeyvaultSecretsProvider: {
         enabled: true
         config: {

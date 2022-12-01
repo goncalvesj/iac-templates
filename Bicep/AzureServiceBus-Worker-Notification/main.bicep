@@ -161,7 +161,7 @@ module aks 'modules/aks.bicep' = {
     aadAdminGroupId: aadAdminGroupId
     laWorkspaceId: laWorkspaceId
     aksSubnetId: vnet.outputs.aksSubnetId
-    aciSubnetName: aciSubnetName
+    // aciSubnetName: aciSubnetName
     acrName: acrName
     acrRgName: acrRgName
     acrRoleId: acrRoleId
