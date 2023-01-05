@@ -39,3 +39,4 @@ Execute the [deploy-bicep.ps1](deploy-bicep.ps1) PowerShell script to deploy the
 - Create Azure Application Insights to be used by the test app.
 - Create Managed Identities and Azure Role Assignments.
 - Add secrets to Azure Key Vault to be used by the test app.
+- Update templates to use existing Azure Landing Zone resources (Log Analytics, Private DNS Zones, etc.)

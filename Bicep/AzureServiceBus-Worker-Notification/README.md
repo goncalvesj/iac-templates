@@ -37,6 +37,10 @@ The AKS cluster is created with the following configuration:
 - Key Vault integration
 - Virtual node integration with Azure Container Instances (to test the virtual node feature)
 
+## Architecture
+
+![Architecture](./docs/architecture.png)
+
 ## Deployment
 
 Use the VS Code Bicep extension to deploy the Bicep files. Right click on the [main.bicep](main.bicep) file and select "Deploy Bicep File". Save the deployment parameters in a file for future use.
