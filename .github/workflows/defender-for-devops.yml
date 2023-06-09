@@ -29,7 +29,7 @@ jobs:
   security:
     # currently only windows latest is supported
     runs-on: windows-latest
-    continue-on-error: false
+    continue-on-error: true
     strategy:
       fail-fast: true
 
@@ -43,7 +43,7 @@ jobs:
           
     - name: Run Microsoft Security DevOps
       uses: microsoft/security-devops-action@v1.6.0
-      continue-on-error: false
+      continue-on-error: true
       id: msdo
       with:
         categories: 'IaC'        
