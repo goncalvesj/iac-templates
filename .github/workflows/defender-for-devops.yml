@@ -24,16 +24,14 @@ on:
   pull_request:
     branches: [ "master" ]
   workflow_dispatch:
-    inputs:
-      tags:
-        description: 'Testing'
-        required: false
-        type: boolean
 
 jobs:
   MSDO:
     # currently only windows latest is supported
     runs-on: windows-latest
+    continue-on-error: false
+    strategy:
+      fail-fast: true
 
     steps:
     - uses: actions/checkout@v3
