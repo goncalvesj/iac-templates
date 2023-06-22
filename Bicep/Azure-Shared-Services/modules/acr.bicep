@@ -8,7 +8,7 @@ resource jprgacr 'Microsoft.ContainerRegistry/registries@2023-01-01-preview' = {
   name: registryName
   location: location
   properties: {
-    adminUserEnabled: true
+    adminUserEnabled: false
     policies: {
       quarantinePolicy: {
         status: 'disabled'

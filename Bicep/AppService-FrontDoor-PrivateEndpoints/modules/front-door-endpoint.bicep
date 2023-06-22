@@ -21,11 +21,11 @@ var privateLinkOriginDetails = {
   requestMessage: 'Front Door request'  
 }
 
-resource frontDoorProfile 'Microsoft.Cdn/profiles@2021-06-01' existing =  {
+resource frontDoorProfile 'Microsoft.Cdn/profiles@2023-05-01' existing =  {
   name: frontDoorProfileName
 }
 
-resource frontDoorEndpoint 'Microsoft.Cdn/profiles/afdEndpoints@2021-06-01' = {
+resource frontDoorEndpoint 'Microsoft.Cdn/profiles/afdEndpoints@2023-05-01' = {
   name: frontDoorEndpointName
   parent: frontDoorProfile
   location: 'global'
@@ -34,7 +34,7 @@ resource frontDoorEndpoint 'Microsoft.Cdn/profiles/afdEndpoints@2021-06-01' = {
   }
 }
 
-resource frontDoorOriginGroup 'Microsoft.Cdn/profiles/originGroups@2021-06-01' = {
+resource frontDoorOriginGroup 'Microsoft.Cdn/profiles/originGroups@2023-05-01' = {
   name: frontDoorOriginGroupName
   parent: frontDoorProfile
   properties: {
@@ -51,7 +51,7 @@ resource frontDoorOriginGroup 'Microsoft.Cdn/profiles/originGroups@2021-06-01' =
   }
 }
 
-resource frontDoorOrigin 'Microsoft.Cdn/profiles/originGroups/origins@2021-06-01' = {
+resource frontDoorOrigin 'Microsoft.Cdn/profiles/originGroups/origins@2023-05-01' = {
   name: frontDoorOriginName
   parent: frontDoorOriginGroup
   properties: {
@@ -66,7 +66,7 @@ resource frontDoorOrigin 'Microsoft.Cdn/profiles/originGroups/origins@2021-06-01
   }
 }
 
-resource frontDoorRoute 'Microsoft.Cdn/profiles/afdEndpoints/routes@2021-06-01' = {
+resource frontDoorRoute 'Microsoft.Cdn/profiles/afdEndpoints/routes@2023-05-01' = {
   name: frontDoorRouteName
   parent: frontDoorEndpoint
   dependsOn: [
