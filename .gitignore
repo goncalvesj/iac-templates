@@ -352,3 +352,6 @@ MigrationBackup/
 .terraform*
 terraform*
 *.tfstate.backup
+
+**/.env
+**/docker-compose.override.yml

@@ -20,8 +20,21 @@ param subnetList = [
   }
 ]
 
+// Function App Settings
+param deployFunction = false
 param functionAppName = toLower('${projectName}-functions')
 param appInsightsName = toLower('${projectName}-appinsights')
 param appServicePlanName = toLower('${projectName}-functionsplan')
 param storageAccountName = toLower('${projectName}storage')
 param logAnalyticsName = toLower('${projectName}-log-analytics')
+
+// ADO Agent ACI Settings
+param acrName = 'jprgacr'
+param acrResourceGroup = 'JPRG-ALZ-Shared'
+
+param aciName = toLower('${projectName}-ado-agent')
+param adoOrgUrl = 'https://dev.azure.com/jpgoncalves/'
+param adoAgentImage = 'jprgacr.azurecr.io/devops/ado-agent:dev'
+
+// GET From
+param adoPatToken = readEnvironmentVariable('ADO_PAT_TOKEN')
