@@ -1,0 +1,37 @@
+name: DevOps Shared Infrastructure Pipeline
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+env:
+    rg-name: JPRG-ALZ-DevOps
+    rg-location: westeurope
+    main-template: main.bicep
+    param-template: main.bicepparam
+    context: Azure-Shared-DevOps
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Azure Login
+        uses: Azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      
+      # - name: Deploy Resource Group        
+      #   working-directory: ${{ env.context }}
+      #   run: |
+      #     az group create --name ${{ env.rg-name }}  --location ${{ env.rg-location }}
+
+      - name: Run What If on Bicep Templates
+        working-directory: ${{ env.context }}
+        run: |
+          az deployment group what-if --template-file ${{ env.main-template }} --parameters ${{ env.param-template }} --resource-group ${{ env.rg-name }}
