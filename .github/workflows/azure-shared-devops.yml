@@ -11,7 +11,7 @@ env:
     rg-location: westeurope
     main-template: main.bicep
     param-template: main.bicepparam
-    context: Azure-Shared-DevOps
+    context: Bicep/Azure-Shared-DevOps
 
 permissions:
   id-token: write
