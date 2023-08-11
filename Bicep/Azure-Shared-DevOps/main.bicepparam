@@ -37,4 +37,4 @@ param adoOrgUrl = 'https://dev.azure.com/jpgoncalves/'
 param adoAgentImage = 'jprgacr.azurecr.io/devops/ado-agent:dev'
 
 // GET From
-param adoPatToken = readEnvironmentVariable('ADO_PAT_TOKEN')
+param adoPatToken = readEnvironmentVariable('ADO_PAT_TOKEN', 'DEFAULT_VALUE')
