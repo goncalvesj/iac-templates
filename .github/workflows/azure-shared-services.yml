@@ -1,4 +1,4 @@
-name: DevOps Shared Infrastructure Pipeline
+name: Shared Services Infrastructure Pipeline
 on:
   push:
     branches:
@@ -7,11 +7,11 @@ on:
     branches:
       - master
 env:
-    rg-name: JPRG-ALZ-DevOps
-    rg-location: westeurope
+    rg-name: JPRG-ALZ-Shared
+    rg-location: northeurope
     main-template: main.bicep
     param-template: main.bicepparam
-    context: Bicep/Azure-Shared-DevOps
+    context: Bicep/Azure-Shared-Services
 
 permissions:
   id-token: write
