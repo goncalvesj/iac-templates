@@ -35,7 +35,39 @@ jobs:
       #   run: |
       #     az group create --name ${{ env.rg-name }}  --location ${{ env.rg-location }}
 
+      - name: Bicep Lint
+        uses: Azure/cli@v1
+        with:
+          inlineScript: az bicep build --file ${{ env.context }}/${{ env.main-template }}
+    
+      - name: Run Validate on Bicep Templates
+        working-directory: ${{ env.context }}
+        run: |
+          az deployment group validate \
+          --template-file ${{ env.main-template }} \
+          --parameters ${{ env.param-template }} \
+          --resource-group ${{ env.rg-name }}
+
       - name: Run What If on Bicep Templates
         working-directory: ${{ env.context }}
         run: |
-          az deployment group what-if --template-file ${{ env.main-template }} --parameters ${{ env.param-template }} --resource-group ${{ env.rg-name }}
+          az deployment group what-if \
+          --template-file ${{ env.main-template }} \
+          --parameters ${{ env.param-template }} \
+          --resource-group ${{ env.rg-name }} > whatif
+          
+      - name: Create String Output
+        id: whatif-string
+        run: |
+          WHATIF=$(cat whatif)
+          
+          delimiter="$(openssl rand -hex 8)"
+          echo "summary<<${delimiter}" >> $GITHUB_OUTPUT
+          echo "## Whatif Output" >> $GITHUB_OUTPUT
+          echo "<details><summary>Click to expand</summary>" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          echo '```' >> $GITHUB_OUTPUT
+          echo "$WHATIF" >> $GITHUB_OUTPUT
+          echo '```' >> $GITHUB_OUTPUT
+          echo "</details>" >> $GITHUB_OUTPUT
+          echo "${delimiter}" >> $GITHUB_OUTPUT
