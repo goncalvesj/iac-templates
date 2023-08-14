@@ -16,6 +16,7 @@ env:
 permissions:
   id-token: write
   contents: read
+  pull-requests: write
 
 jobs:
   plan:
@@ -71,3 +72,19 @@ jobs:
           echo '```' >> $GITHUB_OUTPUT
           echo "</details>" >> $GITHUB_OUTPUT
           echo "${delimiter}" >> $GITHUB_OUTPUT
+
+      - name: Push Whatif Output to PR
+        if: github.ref != 'refs/heads/main'
+        uses: actions/github-script@v6
+        env:
+          SUMMARY: "${{ steps.whatif-string.outputs.summary }}"
+        with:
+            github-token: ${{ secrets.GITHUB_TOKEN }}
+            script: |
+              const body = `${process.env.SUMMARY}`;
+              github.rest.issues.createComment({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  body: body
+              })
