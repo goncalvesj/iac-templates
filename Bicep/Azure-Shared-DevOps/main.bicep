@@ -1,4 +1,6 @@
 param location string = resourceGroup().location
+param adoOrgUrl string
+
 // Dev Center Settings
 param projectName string
 param deployDevCenter bool
@@ -14,15 +16,17 @@ param appInsightsName string
 param appServicePlanName string
 param storageAccountName string
 param logAnalyticsName string
-
+@secure()
+param adoFunctionPatToken string
+@secure()
+param ghPatToken string
 // ACI Settings
 param acrName string
 param acrResourceGroup string
 param aciName string
-param adoOrgUrl string
 param adoAgentImage string
 @secure()
-param adoPatToken string
+param adoBuildAgentPatToken string
 
 // VNET Module
 module vnet 'modules/network.bicep' = {
@@ -65,6 +69,9 @@ module functions 'modules/functions.bicep' = if(deployFunction) {
     functionAppName: functionAppName
     storageAccountName: storageAccountName
     workspaceResourceId: logAnalytics.id
+    AZUREDEVOPS_ORG: adoOrgUrl
+    AZUREDEVOPS_PAT: adoFunctionPatToken
+    GITHUB_PAT: ghPatToken
   }
 }
 // ACI Module
@@ -77,6 +84,6 @@ module aci 'modules/aci.bicep' = {
     aciName: aciName
     adoOrgUrl: adoOrgUrl
     adoAgentImage: adoAgentImage
-    adoPatToken: adoPatToken
+    adoPatToken: adoBuildAgentPatToken
   }
 }

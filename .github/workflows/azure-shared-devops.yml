@@ -73,8 +73,8 @@ jobs:
           echo "</details>" >> $GITHUB_OUTPUT
           echo "${delimiter}" >> $GITHUB_OUTPUT
 
-      - name: Push Whatif Output to PR
-        if: github.ref != 'refs/heads/main'
+      - name: Push What If Output to PR
+        if: github.ref != 'refs/heads/master'
         uses: actions/github-script@v6
         env:
           SUMMARY: "${{ steps.whatif-string.outputs.summary }}"

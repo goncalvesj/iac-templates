@@ -5,7 +5,12 @@ param storageAccountName string
 param functionAppName string
 param appServicePlanName string
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
+//App Settings
+param AZUREDEVOPS_ORG string
+param AZUREDEVOPS_PAT string
+param GITHUB_PAT string
+
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   name: storageAccountName
   location: location
   kind: 'StorageV2'
@@ -80,4 +85,24 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
     Application_Type: 'web'
     WorkspaceResourceId: workspaceResourceId
   }
+}
+
+var BASE_SLOT_APPSETTINGS = {
+  APPINSIGHTS_INSTRUMENTATIONKEY: appInsights.properties.InstrumentationKey
+  APPLICATIONINSIGHTS_CONNECTION_STRING: appInsights.properties.ConnectionString
+  AzureWebJobsStorage: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
+  FUNCTIONS_WORKER_RUNTIME: 'dotnet-isolated'
+  WEBSITE_CONTENTSHARE: toLower(storageAccountName)
+  WEBSITE_CONTENTAZUREFILECONNECTIONSTRING: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
+  WEBSITE_RUN_FROM_PACKAGE: '1'
+  AZUREDEVOPS_ORG: AZUREDEVOPS_ORG
+  AZUREDEVOPS_PAT: AZUREDEVOPS_PAT
+  GITHUB_PAT: GITHUB_PAT
+  PRODUCT_HEADER_VALUE: 'MyApp'
+}
+
+resource functionAppSettings 'Microsoft.Web/sites/config@2022-09-01' = {
+  parent: functionApp
+  name: 'appsettings'
+  properties: BASE_SLOT_APPSETTINGS  
 }

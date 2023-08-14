@@ -36,5 +36,7 @@ param aciName = toLower('${projectName}-ado-agent')
 param adoOrgUrl = 'https://dev.azure.com/jpgoncalves/'
 param adoAgentImage = 'jprgacr.azurecr.io/devops/ado-agent:dev'
 
-// GET From
-param adoPatToken = readEnvironmentVariable('ADO_PAT_TOKEN', 'DEFAULT_VALUE')
+// GET From Environment Variables
+param adoBuildAgentPatToken = readEnvironmentVariable('ADO_PAT_TOKEN', 'DEFAULT_VALUE')
+param adoFunctionPatToken = readEnvironmentVariable('ADOGHSYNC_ADO_PAT', 'DEFAULT_VALUE')
+param ghPatToken = readEnvironmentVariable('ADOGHSYNC_GH_PAT', 'DEFAULT_VALUE')
