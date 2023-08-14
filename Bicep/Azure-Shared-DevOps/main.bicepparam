@@ -21,7 +21,7 @@ param subnetList = [
 ]
 
 // Function App Settings
-param deployFunction = false
+param deployFunction = true
 param functionAppName = toLower('${projectName}-functions')
 param appInsightsName = toLower('${projectName}-appinsights')
 param appServicePlanName = toLower('${projectName}-functionsplan')

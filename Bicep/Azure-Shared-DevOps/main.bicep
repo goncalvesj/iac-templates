@@ -74,7 +74,7 @@ module functions 'modules/functions.bicep' = if(deployFunction) {
     GITHUB_PAT: ghPatToken
   }
 }
-// ACI Module
+// ACI Module - ADO Build Agent
 module aci 'modules/aci.bicep' = {
   name: '${projectName}-aci'
   params: {

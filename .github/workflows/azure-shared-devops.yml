@@ -110,10 +110,10 @@ jobs:
       #   run: |
       #     az group create --name ${{ env.rg-name }}  --location ${{ env.rg-location }}
       
-      # - name: Deploy Bicep Templates
-      #   working-directory: ${{ env.context }}
-      #   run: |
-      #     az deployment group create \
-      #     --template-file ${{ env.main-template }} \
-      #     --parameters ${{ env.param-template }} \
-      #     --resource-group ${{ env.rg-name }}
+      - name: Deploy Bicep Templates
+        working-directory: ${{ env.context }}
+        run: |
+          az deployment group create \
+          --template-file ${{ env.main-template }} \
+          --parameters ${{ env.param-template }} \
+          --resource-group ${{ env.rg-name }}
