@@ -43,10 +43,7 @@ jobs:
       - name: Run Validate on Bicep Templates
         working-directory: ${{ env.context }}
         run: |
-          az deployment group validate \
-          --template-file ${{ env.main-template }} \
-          --parameters ${{ env.param-template }} \
-          --resource-group ${{ env.rg-name }}
+          az deployment group validate --template-file ${{ env.main-template }} --parameters ${{ env.param-template }} --resource-group ${{ env.rg-name }}
 
       - name: Run What If on Bicep Templates
         working-directory: ${{ env.context }}
