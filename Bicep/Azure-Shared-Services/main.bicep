@@ -1,70 +1,21 @@
 param location string = resourceGroup().location
-param projectName string = 'alzshared'
+param projectName string
 
 // VNET Settings
-param vnetName string = toLower('${projectName}spokevnet')
-param vnetAddressPrefix string = '10.4.0.0/16'
-param subnetList array = [
-  {
-    name: 'APIM-Subnet'
-    value: '10.4.1.0/24'
-    rules: [
-      {
-        name: 'AllowHTTP'
-        properties: {
-          description: 'Allow HTTP'
-          protocol: 'TCP'
-          sourcePortRange: '*'
-          destinationPortRange: '80'
-          sourceAddressPrefix: '*'
-          destinationAddressPrefix: '*'
-          access: 'Allow'
-          priority: 200
-          direction: 'Inbound'
-        }
-      }
-      {
-        name: 'AllowHTTPS'
-        properties: {
-          description: 'Allow HTTPS'
-          protocol: 'TCP'
-          sourcePortRange: '*'
-          destinationPortRange: '443'
-          sourceAddressPrefix: '*'
-          destinationAddressPrefix: '*'
-          access: 'Allow'
-          priority: 300
-          direction: 'Inbound'
-        }        
-      }
-      {
-        name: 'Allow3443Inbound'
-        properties: {
-          description: 'Allow 3443'
-          protocol: 'TCP'
-          sourcePortRange: '*'
-          destinationPortRange: '3443'
-          sourceAddressPrefix: 'ApiManagement'
-          destinationAddressPrefix: 'VirtualNetwork'
-          access: 'Allow'
-          priority: 400
-          direction: 'Inbound'
-        }        
-      }
-    ]
-  }
-]
+param vnetName string
+param vnetAddressPrefix string
+param subnetList array
 
 // Insights Settings, needs existing Log Analytics Workspace
-param appInsightsName string = toLower('${projectName}appinsights')
-param logAnalyticsName string = 'jprg-alz-log-analytics'
-param logAnalyticsResourceGroup string = 'jprg-alz-management'
+param appInsightsName string
+param logAnalyticsName string
+param logAnalyticsResourceGroup string
 
 // APIM Settings
-param apiManagementName string = toLower('${projectName}apim')
-param selfHostedGatewayName string = toLower('${projectName}apimhostedgateway')
+param apiManagementName string
+param selfHostedGatewayName string
 
-param registryName string = 'jprgacr'
+param registryName string
 
 // Get Existing Log Analytics Workspace
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' existing = {
