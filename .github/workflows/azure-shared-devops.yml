@@ -36,9 +36,8 @@ jobs:
       #     az group create --name ${{ env.rg-name }}  --location ${{ env.rg-location }}
 
       - name: Bicep Lint
-        uses: Azure/cli@v1
-        with:
-          inlineScript: az bicep build --file ${{ env.context }}/${{ env.main-template }}
+        run: |
+          az bicep build --file ${{ env.context }}/${{ env.main-template }}
     
       # - name: Run Validate on Bicep Templates
       #   working-directory: ${{ env.context }}
