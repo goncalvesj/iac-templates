@@ -25,7 +25,7 @@ param deployFunction = true
 param functionAppName = toLower('${projectName}-functions')
 param appInsightsName = toLower('${projectName}-appinsights')
 param appServicePlanName = toLower('${projectName}-functionsplan')
-param storageAccountName = toLower('${projectName}storage')
+param storageAccountName = toLower('${projectName}functionstorage')
 param logAnalyticsName = toLower('${projectName}-log-analytics')
 
 // ADO Agent ACI Settings
