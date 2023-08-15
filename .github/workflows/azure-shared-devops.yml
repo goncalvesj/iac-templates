@@ -114,6 +114,10 @@ jobs:
       
       - name: Deploy Bicep Templates
         working-directory: ${{ env.context }}
+        env:
+          ADOGHSYNC_ADO_PAT: ${{ secrets.ADOGHSYNC_ADO_PAT }}
+          ADOGHSYNC_GH_PAT: ${{ secrets.ADOGHSYNC_GH_PAT }}
+          ADO_PAT_TOKEN: ${{ secrets.ADO_PAT_TOKEN }}
         run: |
           az deployment group create \
           --template-file ${{ env.main-template }} \
