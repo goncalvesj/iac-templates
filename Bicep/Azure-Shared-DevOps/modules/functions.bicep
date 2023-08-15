@@ -21,6 +21,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
     minimumTlsVersion: 'TLS1_2'
     supportsHttpsTrafficOnly: true
     allowBlobPublicAccess: false
+    // For Storage Firewall
     // networkAcls: {
     //   bypass: 'AzureServices'
     //   defaultAction: 'Deny'
@@ -31,50 +32,49 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
 resource functionApp 'Microsoft.Web/sites@2022-09-01' = {
   name: functionAppName
   location: location
-  kind: 'functionapp,linux'
+  kind: 'functionapp'
   identity: {
     type: 'SystemAssigned'
   }
   properties: {
     httpsOnly: true    
-    serverFarmId: appServicePlan.id
-    siteConfig: {
-      ftpsState: 'FtpsOnly'
-      minTlsVersion: '1.2'      
-      appSettings: [
-        {
-          name: 'FUNCTIONS_WORKER_RUNTIME'
-          value: 'dotnet-isolated'
-        }
-        {
-          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
-          value: appInsights.properties.InstrumentationKey
-        }
-        {
-          name: 'AzureWebJobsStorage'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
-        }
-        {
-          name:'WEBSITE_CONTENTSHARE'
-          value: toLower(storageAccountName)
-        }
-        {
-          name:'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
-        }
-      ]
+    serverFarmId: appServicePlan.id    
+  }
+  resource config 'config' = {
+    name: 'web'
+    properties: {
+      ftpsState: 'Disabled'
+      minTlsVersion: '1.2'
+    }
+  }
+  resource publishingScmCredentialPolicies 'basicPublishingCredentialsPolicies' = {
+    name: 'scm'
+    properties: {
+      allow: true
+    }
+  }
+  resource publishingFtpCredentialPolicies 'basicPublishingCredentialsPolicies' = {
+    name: 'ftp'
+    properties: {
+      allow: false
     }
   }
 }
 
+
+
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-09-01' = {
   name: appServicePlanName
   location: location
-  kind: 'linux'
+  kind: 'functionapp'
   sku: {
     name: 'Y1'
     tier: 'Dynamic'
   }
+  // If Linux, this is required
+  // properties: {
+  //   reserved: true
+  // }
 }
 
 resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
@@ -92,6 +92,7 @@ var BASE_SLOT_APPSETTINGS = {
   APPLICATIONINSIGHTS_CONNECTION_STRING: appInsights.properties.ConnectionString
   AzureWebJobsStorage: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
   FUNCTIONS_WORKER_RUNTIME: 'dotnet-isolated'
+  FUNCTIONS_EXTENSION_VERSION: '~4'
   WEBSITE_CONTENTSHARE: toLower(storageAccountName)
   WEBSITE_CONTENTAZUREFILECONNECTIONSTRING: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
   WEBSITE_RUN_FROM_PACKAGE: '1'
