@@ -1,7 +1,7 @@
 FROM ubuntu:20.04
 RUN DEBIAN_FRONTEND=noninteractive apt-get update
-RUN DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
-# Test change
+RUN DEBIAN_FRONTEND=noninteractive apt-get upgrade -y && useradd -m agentuser
+
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends \
     apt-transport-https \
     apt-utils \
@@ -23,6 +23,8 @@ ENV AZP_TOKEN="CHANGEME"
 ENV AZP_AGENT_NAME="CHANGEME"
 
 WORKDIR /azp
+RUN chown -R agentuser:agentuser /azp
+RUN chmod 755 /azp
 
 # COPY ./start.sh .
 COPY ./AzDevOps/start.sh .
