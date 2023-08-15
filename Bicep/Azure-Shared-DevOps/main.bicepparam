@@ -22,7 +22,7 @@ param subnetList = [
 
 // Function App Settings
 param deployFunction = true
-param functionAppName = toLower('${projectName}-functions')
+param functionAppName = toLower('${projectName}-function')
 param appInsightsName = toLower('${projectName}-appinsights')
 param appServicePlanName = toLower('${projectName}-functionsplan')
 param storageAccountName = toLower('${projectName}functionstorage')
