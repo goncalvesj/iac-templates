@@ -1,0 +1,121 @@
+name: Shared Services Infrastructure Pipeline
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+env:
+    rg-name: JPRG-ALZ-Shared
+    rg-location: northeurope
+    main-template: main.bicep
+    param-template: main.bicepparam
+    context: Bicep/Azure-Shared-Services
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  plan:
+    name: Plan
+    runs-on: ubuntu-latest
+    # environment: VS-FTE
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Azure Login
+        uses: Azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      
+      # - name: Deploy Resource Group        
+      #   working-directory: ${{ env.context }}
+      #   run: |
+      #     az group create --name ${{ env.rg-name }}  --location ${{ env.rg-location }}
+
+      - name: Bicep Lint
+        run: |
+          az bicep build --file ${{ env.context }}/${{ env.main-template }}
+    
+      - name: Run Validate on Bicep Templates
+        working-directory: ${{ env.context }}
+        run: |
+          az deployment group validate \
+          --template-file ${{ env.main-template }} \
+          --parameters ${{ env.param-template }} \
+          --resource-group ${{ env.rg-name }}
+
+      - name: Run What If on Bicep Templates
+        working-directory: ${{ env.context }}
+        run: |
+          az deployment group what-if \
+          --template-file ${{ env.main-template }} \
+          --parameters ${{ env.param-template }} \
+          --resource-group ${{ env.rg-name }} > whatif
+          
+      - name: Create String Output
+        id: whatif-string
+        working-directory: ${{ env.context }}
+        run: |
+          WHATIF=$(cat whatif)
+          
+          delimiter="$(openssl rand -hex 8)"
+          echo "summary<<${delimiter}" >> $GITHUB_OUTPUT
+          echo "## What If Output - ${{ env.rg-name }}" >> $GITHUB_OUTPUT
+          echo "<details><summary>Click to expand</summary>" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          echo '```' >> $GITHUB_OUTPUT
+          echo "$WHATIF" >> $GITHUB_OUTPUT
+          echo '```' >> $GITHUB_OUTPUT
+          echo "</details>" >> $GITHUB_OUTPUT
+          echo "${delimiter}" >> $GITHUB_OUTPUT
+
+      - name: Push What If Output to PR
+        if: github.ref != 'refs/heads/master'
+        uses: actions/github-script@v6
+        env:
+          SUMMARY: "${{ steps.whatif-string.outputs.summary }}"
+        with:
+            github-token: ${{ secrets.GITHUB_TOKEN }}
+            script: |
+              const body = `${process.env.SUMMARY}`;
+              github.rest.issues.createComment({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  body: body
+              })
+  deploy:
+    name: Deploy
+    needs: plan
+    runs-on: ubuntu-latest
+    # environment: VS-FTE
+    if: github.ref == 'refs/heads/master'
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Azure Login
+        uses: Azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      
+      # - name: Deploy Resource Group        
+      #   working-directory: ${{ env.context }}
+      #   run: |
+      #     az group create --name ${{ env.rg-name }}  --location ${{ env.rg-location }}
+      
+      - name: Deploy Bicep Templates
+        working-directory: ${{ env.context }}
+        run: |
+          az deployment group create \
+          --template-file ${{ env.main-template }} \
+          --parameters ${{ env.param-template }} \
+          --resource-group ${{ env.rg-name }}
