@@ -30,4 +30,6 @@ RUN chmod 755 /azp
 COPY ./AzDevOps/start.sh .
 RUN chmod +x start.sh
 
+USER agentuser
+
 ENTRYPOINT [ "./start.sh" ]
