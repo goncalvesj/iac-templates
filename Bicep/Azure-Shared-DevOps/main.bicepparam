@@ -37,6 +37,8 @@ param adoOrgUrl = 'https://dev.azure.com/jpgoncalves/'
 param adoAgentImage = 'jprgacr.azurecr.io/devops/ado-agent:dev'
 
 // GET From Environment Variables
+// Build Agent PAT Tokens
 param adoBuildAgentPatToken = readEnvironmentVariable('ADO_PAT_TOKEN', 'DEFAULT_VALUE')
+// Function App PAT Tokens
 param adoFunctionPatToken = readEnvironmentVariable('ADOGHSYNC_ADO_PAT', 'DEFAULT_VALUE')
 param ghPatToken = readEnvironmentVariable('ADOGHSYNC_GH_PAT', 'DEFAULT_VALUE')
