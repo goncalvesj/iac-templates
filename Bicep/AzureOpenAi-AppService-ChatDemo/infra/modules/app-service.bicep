@@ -12,7 +12,9 @@ param kind string = 'app,linux'
 param alwaysOn bool = true
 param appCommandLine string = ''
 param appSettings object = {}
+param authSettings object = {}
 param clientAffinityEnabled bool = false
+param clientCertEnabled bool = false
 param functionAppScaleLimit int = -1
 param linuxFxVersion string
 param minimumElasticInstanceCount int = -1
@@ -42,7 +44,7 @@ resource appService 'Microsoft.Web/sites@2022-09-01' = {
     }
     clientAffinityEnabled: clientAffinityEnabled
     httpsOnly: true
-    clientCertEnabled: false
+    clientCertEnabled: clientCertEnabled
   }
 
   identity: {
@@ -52,5 +54,10 @@ resource appService 'Microsoft.Web/sites@2022-09-01' = {
   resource configAppSettings 'config' = {
     name: 'appsettings'
     properties: appSettings
+  }
+
+  resource configAuthSettings 'config' = {
+    name: 'authsettingsV2'
+    properties: authSettings
   }
 }
