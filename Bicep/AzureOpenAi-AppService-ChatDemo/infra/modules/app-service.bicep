@@ -4,9 +4,6 @@ param tags object = {}
 
 // Reference Properties
 param appServicePlanId string
-param keyVaultName string = ''
-param managedIdentity bool = !empty(keyVaultName)
-
 
 // Microsoft.Web/sites Properties
 param kind string = 'app,linux'
@@ -24,7 +21,7 @@ param use32BitWorkerProcess bool = false
 param ftpsState string = 'FtpsOnly'
 param healthCheckPath string = ''
 
-resource appService 'Microsoft.Web/sites@2022-03-01' = {
+resource appService 'Microsoft.Web/sites@2022-09-01' = {
   name: name
   location: location
   tags: tags
@@ -40,13 +37,17 @@ resource appService 'Microsoft.Web/sites@2022-03-01' = {
       minimumElasticInstanceCount: minimumElasticInstanceCount != -1 ? minimumElasticInstanceCount : null
       use32BitWorkerProcess: use32BitWorkerProcess
       functionAppScaleLimit: functionAppScaleLimit != -1 ? functionAppScaleLimit : null
-      healthCheckPath: healthCheckPath      
+      healthCheckPath: healthCheckPath
+      minTlsVersion: '1.2'
     }
     clientAffinityEnabled: clientAffinityEnabled
     httpsOnly: true
+    clientCertEnabled: false
   }
 
-  identity: { type: managedIdentity ? 'SystemAssigned' : 'None' }
+  identity: {
+    type: 'SystemAssigned'
+  }
 
   resource configAppSettings 'config' = {
     name: 'appsettings'
