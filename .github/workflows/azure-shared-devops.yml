@@ -3,9 +3,14 @@ on:
   push:
     branches:
       - master
+    paths:
+      - 'Bicep/Azure-Shared-DevOps/**'
   pull_request:
     branches:
       - master
+    paths:
+      - 'Bicep/Azure-Shared-DevOps/**'
+      
 env:
     rg-name: JPRG-ALZ-DevOps
     rg-location: westeurope
