@@ -3,9 +3,13 @@ on:
   push:
     branches:
       - master
+    paths: 
+      - 'Docker/**'
   pull_request:
     branches:
       - master
+    paths: 
+      - 'Docker/**'
 env:
   context: Docker  
   dockerfile-location: 'AzDevOps/Dockerfile'
