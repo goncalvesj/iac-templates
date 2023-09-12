@@ -1,50 +1,59 @@
-param location string = resourceGroup().location
+targetScope = 'subscription'
+
+// param location string = resourceGroup().location
+param location string
 param tenantId string = subscription().tenantId
 
-param projectName string = 'lztest'
+param projectName string
+param resourceGroupName string
 
 // VNET Settings
-param vnetName string = toLower('${projectName}spokevnet')
-param vnetAddressPrefix string = '10.2.0.0/16'
-param appSubnetName string = 'APP-Subnet'
-param appSubnetAddress string = '10.2.1.0/24'
-param storageSubnetName string = 'STORAGE-Subnet'
-param storageSubnetAddress string = '10.2.0.0/29'
-param kvSubnetName string = 'KV-Subnet'
-param kvSubnetAddress string = '10.2.2.0/29'
-param cacheSubnetName string = 'REDIS-Subnet'
-param cacheSubnetAddress string = '10.2.3.0/29'
-param sqlSubnetName string = 'SQL-Subnet'
-param sqlSubnetAddress string = '10.2.4.0/29'
+param vnetName string
+param vnetAddressPrefix string
+param appSubnetName string
+param appSubnetAddress string
+param storageSubnetName string
+param storageSubnetAddress string
+param kvSubnetName string
+param kvSubnetAddress string
+param cacheSubnetName string
+param cacheSubnetAddress string
+param sqlSubnetName string
+param sqlSubnetAddress string
 
 // Key Vault Settings
-param kvName string = toLower('${projectName}kv')
+param kvName string
 
 // Storage Settings
-param storageAccountName string = toLower('${projectName}storage')
-param storageSkuName string = 'Standard_LRS'
-param storageInputBlobContainerName string = 'static-files'
+param storageAccountName string
+param storageSkuName string
+param storageInputBlobContainerName string
 
 // App Service Settings
-param appPlanName string = toLower('${projectName}plan')
-param appServiceName string = toLower('${projectName}app')
+param appPlanName string
+param appServiceName string
 
 // Cache Settings
-param cacheName string = toLower('${projectName}cache')
+param cacheName string
 
 // SQL Settings
-param sqlServerName string = toLower('${projectName}sqlserver')
-param sqlAdministratorLogin string = 'CHANGE_ME'
+param sqlServerName string
+param sqlAdministratorLogin string
 @secure()
-param sqlAdministratorLoginPassword string = ''
-
+param sqlAdministratorLoginPassword string
 
 // Front Door Settings
-param frontDoorSkuName string = 'Premium_AzureFrontDoor'
-param frontDoorProfileName string = toLower('${projectName}frontdoor')
+param frontDoorSkuName string
+param frontDoorProfileName string
+
+resource rg 'Microsoft.Resources/resourceGroups@2023-07-01' = {
+  name: resourceGroupName
+  location: location
+}
 
 module vnet 'modules/network.bicep' = {
   name: '${projectName}-vnet'
+  scope: rg
   params: {
     location: location
     appSubnetAddress: appSubnetAddress
@@ -67,6 +76,7 @@ module kv 'modules/key-vault.bicep' = {
     vnet
   ]
   name: '${projectName}-key-vault'
+  scope: rg
   params: {
     keysPermissions: []
     keyVaultName: kvName
@@ -87,6 +97,7 @@ module storage 'modules/storage.bicep' = {
     vnet
   ]
   name: '${projectName}-storage'
+  scope: rg
   params: {
     accountName: storageAccountName
     inputBlobContainerName: storageInputBlobContainerName
@@ -102,11 +113,17 @@ module appservice 'modules/app-service.bicep' = {
     vnet
   ]
   name: '${projectName}-app-service'
+  scope: rg
   params: {
     appPlanName: appPlanName
     appServiceName: appServiceName
     appSubnetId: vnet.outputs.appSubnetId
     location: location
+    appSettings: {
+      SQL_CONNECTIONSTRING: ''
+      CACHE_CONNECTIONSTRING: ''
+      STORAGE_CONNECTIONSTRING: ''
+    }
   }
 }
 
@@ -115,6 +132,7 @@ module cache 'modules/cache.bicep' = {
     vnet
   ]
   name: '${projectName}-cache'
+  scope: rg
   params: {
     name: cacheName
     location: location
@@ -128,6 +146,7 @@ module sql 'modules/sql.bicep' = {
     vnet
   ]
   name: '${projectName}-sql'
+  scope: rg
   params: {
     location: location
     subnetId: vnet.outputs.sqlSubnetId
@@ -143,6 +162,7 @@ module frontdoor 'modules/front-door.bicep' = {
     vnet
   ]
   name: '${projectName}-frontdoor'
+  scope: rg
   params: {
     frontDoorProfileName: frontDoorProfileName
     frontDoorSkuName: frontDoorSkuName
@@ -159,8 +179,9 @@ module storageFrontDoorEndpoint 'modules/front-door-endpoint.bicep' = {
     storage
   ]
   name: '${projectName}-afd-storage-endpoint'
+  scope: rg
   params: {
-    frontDoorEndpointName: 'storage-${uniqueString(resourceGroup().id)}'
+    frontDoorEndpointName: 'storage-${uniqueString(rg.id)}'
     frontDoorProfileName: frontDoorProfileName
     frontDoorOriginName: 'storage-origin'
     originHostName: storageOriginHostName
@@ -180,8 +201,9 @@ module appFrontDoorEndpoint 'modules/front-door-endpoint.bicep' = {
     appservice
   ]
   name: '${projectName}-afd-app-endpoint'
+  scope: rg
   params: {
-    frontDoorEndpointName: 'app-${uniqueString(resourceGroup().id)}'
+    frontDoorEndpointName: 'app-${uniqueString(rg.id)}'
     frontDoorProfileName: frontDoorProfileName
     frontDoorOriginName: 'app-origin'
     originHostName: appOriginHostName

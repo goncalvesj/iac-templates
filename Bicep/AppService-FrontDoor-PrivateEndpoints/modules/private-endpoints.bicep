@@ -57,7 +57,8 @@ resource privateEndpointDns 'Microsoft.Network/privateEndpoints/privateDnsZoneGr
 }
 
 resource blobPrivateDnsZoneVnetLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = {
-  name: '${privateDnsZone.name}/${uniqueString(resourceId)}'
+  parent: privateDnsZone
+  name: uniqueString(resourceId)
   location: 'global'
   properties: {
     registrationEnabled: false
