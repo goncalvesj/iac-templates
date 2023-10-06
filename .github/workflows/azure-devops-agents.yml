@@ -75,11 +75,11 @@ jobs:
         run: |
           cd ${{ env.context }}
           docker build -f ${{ env.windows-dockerfile-location }} `
-          -t ${{ secrets.AZURE_ACR_NAME }}/${{ env.windows-image-tag }}:$GITHUB_RUN_ID `
+          -t ${{ secrets.AZURE_ACR_NAME }}/${{ env.windows-image-tag }}:$env:GITHUB_RUN_ID `
           -t ${{ secrets.AZURE_ACR_NAME }}/${{ env.windows-image-tag }}:latest .
 
       - name: Push the Docker image
         if: github.ref == 'refs/heads/master'
         run: |
-          docker push ${{ secrets.AZURE_ACR_NAME }}/${{ env.windows-image-tag }}:$GITHUB_RUN_ID
+          docker push ${{ secrets.AZURE_ACR_NAME }}/${{ env.windows-image-tag }}:$env:GITHUB_RUN_ID
           docker push ${{ secrets.AZURE_ACR_NAME }}/${{ env.windows-image-tag }}:latest
