@@ -16,7 +16,7 @@ env:
   linux-context: 'Docker'
   linux-dockerfile-location: 'ADO/Linux/Dockerfile'
   linux-image-tag: 'devops/ado-agent-linux'
-  windows-context: 'ADO/Windows'
+  windows-context: 'Docker/ADO/Windows'
   windows-dockerfile-location: 'Dockerfile'  
   windows-image-tag: 'devops/ado-agent-windows'
 
