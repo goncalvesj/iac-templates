@@ -1,0 +1,32 @@
+version: '3.4'
+
+services:
+  ado-agent-1:
+    image: jprgacr.azurecr.io/devops/ado-agent-windows:dev
+    environment:
+      - AZP_AGENT_NAME=ado-agent-windows-1
+      - AZP_TOKEN=
+      - AZP_URL=
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+  ado-agent-2:
+    image: jprgacr.azurecr.io/devops/ado-agent-windows:dev
+    environment:
+      - AZP_AGENT_NAME=ado-agent-windows-2
+      - AZP_TOKEN=
+      - AZP_URL=
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+  ado-agent-3:
+    image: jprgacr.azurecr.io/devops/ado-agent-windows:dev
+    environment:
+      - AZP_AGENT_NAME=ado-agent-windows-3
+      - AZP_TOKEN=
+      - AZP_URL=
+    build:
+      context: .
+      dockerfile: Dockerfile
