@@ -13,10 +13,11 @@ on:
   workflow_dispatch:
 
 env:
-  context: Docker
+  linux-context: 'Docker'
   linux-dockerfile-location: 'ADO/Linux/Dockerfile'
-  windows-dockerfile-location: 'ADO/Windows/Dockerfile'
   linux-image-tag: 'devops/ado-agent-linux'
+  windows-context: 'ADO/Windows'
+  windows-dockerfile-location: 'Dockerfile'  
   windows-image-tag: 'devops/ado-agent-windows'
 
 permissions:
@@ -43,7 +44,7 @@ jobs:
 
       - name: Build the Docker image
         run: |
-          cd ${{ env.context }}
+          cd ${{ env.linux-context }}
           docker build -f ${{ env.linux-dockerfile-location }} \
           -t ${{ secrets.AZURE_ACR_NAME }}/${{ env.linux-image-tag }}:$GITHUB_RUN_ID \
           -t ${{ secrets.AZURE_ACR_NAME }}/${{ env.linux-image-tag }}:latest .
@@ -73,7 +74,7 @@ jobs:
 
       - name: Build the Docker image
         run: |
-          cd ${{ env.context }}
+          cd ${{ env.windows-context }}
           docker build -f ${{ env.windows-dockerfile-location }} `
           -t ${{ secrets.AZURE_ACR_NAME }}/${{ env.windows-image-tag }}:$env:GITHUB_RUN_ID `
           -t ${{ secrets.AZURE_ACR_NAME }}/${{ env.windows-image-tag }}:latest .
