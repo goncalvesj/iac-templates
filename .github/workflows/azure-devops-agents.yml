@@ -72,8 +72,8 @@ jobs:
       - name: Build the Docker image
         run: |
           cd ${{ env.context }}
-          docker build -f ${{ env.windows-dockerfile-location }} \
-          -t ${{ secrets.AZURE_ACR_NAME }}/${{ env.windows-image-tag }}:$GITHUB_RUN_ID \
+          docker build -f ${{ env.windows-dockerfile-location }} `
+          -t ${{ secrets.AZURE_ACR_NAME }}/${{ env.windows-image-tag }}:$GITHUB_RUN_ID `
           -t ${{ secrets.AZURE_ACR_NAME }}/${{ env.windows-image-tag }}:latest .
 
       - name: Push the Docker image
