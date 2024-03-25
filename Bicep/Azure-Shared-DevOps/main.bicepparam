@@ -18,6 +18,11 @@ param subnetList = [
     value: '10.1.1.0/24'
     rules: []
   }
+  {
+    name: 'ACI-Subnet'
+    value: '10.1.2.0/24'
+    rules: []
+  }
 ]
 
 // Function App Settings
