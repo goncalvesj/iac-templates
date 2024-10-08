@@ -350,8 +350,10 @@ MigrationBackup/
 .ionide/
 
 .terraform*
-terraform*
+# terraform*
 *.tfstate.backup
+*.tfstate
+*.backup
 
 **/.env
 **/docker-compose.override.yml
