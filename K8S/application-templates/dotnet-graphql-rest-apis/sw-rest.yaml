@@ -26,7 +26,7 @@ spec:
       automountServiceAccountToken: false
       containers:
         - name: sw-restapi
-          image: ghcr.io/goncalvesj/sw-rest:0.0.1
+          image: ghcr.io/goncalvesj/application-templates/sw-rest:0.0.2
           imagePullPolicy: Always
           securityContext:
             allowPrivilegeEscalation: false
