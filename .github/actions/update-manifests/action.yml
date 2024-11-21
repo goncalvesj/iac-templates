@@ -1,0 +1,73 @@
+name: 'Update Manifests'
+description: 'Update Image Tag in Kubernetes Manifests and Create Pull Request'
+inputs:
+  new-tag:
+    required: true
+    description: ''
+  repo-name:
+    required: true
+    description: ''
+  image-name:
+    required: true
+    description: ''
+  token:
+    description: 'github auth token (PAT, github token, or GitHub app token)'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/checkout@v4
+      with:
+        repository: yxtc4/devops
+        ref: main
+        token: ${{ inputs.token }}
+
+    - name: Update Image Tag in Kubernetes Manifests
+      shell: bash
+      run: |
+        cd k8s/${{ inputs.repo-name }}
+
+        # Define the new tag value
+        new_tag="${{ inputs.new-tag }}"
+
+        # Define the file to be updated
+        file="${{ inputs.image-name }}.yaml"
+
+        # Use sed to find and replace the tag value
+        sed -i.bak -E "s|(${{ inputs.image-name }}:)[^ ]+|\1$new_tag|" "$file"
+
+        cat $file
+        echo "Updated the tag to $new_tag in $file"
+
+    - name: Create Pull Request
+      id: cpr
+      uses: peter-evans/create-pull-request@v7.0.5
+      with:
+        token: ${{ inputs.token }}
+        branch: ${{ inputs.repo-name }}/${{ inputs.image-name }}-${{ inputs.new-tag }}
+        title: Update ${{ inputs.image-name }} to ${{ inputs.new-tag }}        
+        body: Automated changes by GitHub action
+        commit-message: Update ${{ inputs.image-name }} to ${{ inputs.new-tag }}
+
+    - name: Check outputs
+      shell: bash
+      if: ${{ steps.cpr.outputs.pull-request-number }}
+      run: |
+        echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
+        echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
+
+    - name: Generate Job Summary
+      shell: bash
+      run: |
+        echo "## Workflow Results" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY # this is a blank line
+        echo "### Workflow process:" >> $GITHUB_STEP_SUMMARY
+        echo "Pull request is created to update k8s manifest files in separate repository" >> $GITHUB_STEP_SUMMARY
+        echo "After the pull request is merged, ArgoCD will sync the changes to the AKS cluster" >> $GITHUB_STEP_SUMMARY
+        echo "Next steps: Complete pull request below to finalize the GitOps flow" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Created Pull Request Details:" >> $GITHUB_STEP_SUMMARY
+        echo "Destination Repo: DevOps" >> $GITHUB_STEP_SUMMARY
+        echo "Pull Request Number: ${{ steps.cpr.outputs.pull-request-number }}" >> $GITHUB_STEP_SUMMARY
+        echo "Pull Request URL: ${{ steps.cpr.outputs.pull-request-url }}" >> $GITHUB_STEP_SUMMARY
