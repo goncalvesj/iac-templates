@@ -23,14 +23,28 @@ spec:
           operator: 'Equal'
           value: 'spot'
           effect: 'NoSchedule'
+      automountServiceAccountToken: false
       containers:
         - name: sw-restapi
           image: ghcr.io/goncalvesj/sw-rest:0.0.1
           imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - NET_RAW
+          envFrom:
+            - configMapRef:
+                name: sw-restapi-config
           resources:
+            requests:
+              memory: '64Mi'
+              cpu: '1m'
+              ephemeral-storage: '1M'
             limits:
               memory: '128Mi'
               cpu: '500m'
+              ephemeral-storage: '1Gi'
           ports:
             - containerPort: 8080
           readinessProbe:

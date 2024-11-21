@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sw-restapi-config
+data:
+  OpenAPI__Description: API that provides information about Star Wars universe
+  OpenAPI__Server: https://aks-endpoints-dnfmcbbfhgeqgmb7.z01.azurefd.net/sw-api
+  OpenAPI__Title: Star Wars REST API
+  OpenAPI__Version: 1.0.0
